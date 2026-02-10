@@ -3,50 +3,41 @@
 ## Project Overview
 
 - **Name:** CaiD (CAD AI Design)
-- **Version:** 0.3.0
-- **Description:** Two MCP servers for AI-assisted 3D modeling
-- **Purpose:** Enable LLMs to create/edit 3D models via FreeCAD and Blender
+- **Version:** 0.4.0
+- **Description:** Three MCP servers for AI-assisted 3D modeling
+- **Purpose:** Enable LLMs to create/edit 3D models via FreeCAD, Blender, and OpenSCAD
 - **UX:** MCP servers (CLI/programmatic integration)
 
 ## Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐
-│   AI Client     │     │   AI Client     │
-│ (Claude, etc.)  │     │ (Claude, etc.)  │
-└────────┬────────┘     └────────┬────────┘
-         │ MCP                   │ MCP
-         ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐
-│  freecad-mcp    │     │  blender-mcp    │
-│  (Python/uv)    │     │  (Python/uv)    │
-└────────┬────────┘     └────────┬────────┘
-         │ XML-RPC               │ Socket
-         ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐
-│ FreeCAD Addon   │     │ Blender Addon   │
-│ (Bridge)        │     │ (Bridge)        │
-└─────────────────┘     └─────────────────┘
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   AI Client     │     │   AI Client     │     │   AI Client     │
+│ (Claude, etc.)  │     │ (Claude, etc.)  │     │ (Claude, etc.)  │
+└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
+         │ MCP                   │ MCP                   │ MCP
+         ▼                       ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  freecad-mcp    │     │  blender-mcp    │     │  openscad-mcp   │
+│  (Python/uv)    │     │  (Python/uv)    │     │  (Python/uv)    │
+└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
+         │ XML-RPC               │ Socket                │ subprocess
+         ▼                       ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ FreeCAD Addon   │     │ Blender Addon   │     │ OpenSCAD CLI    │
+│ (GUI Bridge)    │     │ (GUI Bridge)    │     │ (Headless)      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
 ## Components
 
-### 1. freecad-mcp (23 tools)
-Parametric CAD modeling for mechanical engineering and precise parts.
+### 1. freecad-mcp (2 tools)
+Code-first approach. Scripting reference: `llms.txt/FREECAD_RESOURCES.md`
 
-| Category | Tools |
-|----------|-------|
-| **Primitives** | `create_primitive`, `create_document` |
-| **Sketching** | `create_sketch`, `add_sketch_constraint` |
-| **Features** | `pad_sketch`, `pocket_sketch`, `revolve_sketch` |
-| **Edges** | `fillet_edges`, `chamfer_edges` |
-| **Helix/Thread** | `create_helix`, `create_thread`, `sweep_along_path` |
-| **Boolean** | `boolean_operation` (union/difference/intersection) |
-| **Patterns** | `linear_pattern`, `polar_pattern`, `mirror_object` |
-| **Import/Export** | `import_file`, `export_stl`, `export_step` |
-| **Inspection** | `get_face_names`, `get_edge_names`, `measure_distance` |
-| **Parameters** | `set_parameter` |
-| **Utility** | `get_screenshot`, `get_objects`, `execute_code` |
+| Tool | Description |
+|------|-------------|
+| `execute_code` | Execute Python code in FreeCAD |
+| `get_model_info` | Get objects and dimensions |
 
 ### 2. blender-mcp (25 tools)
 Mesh modeling for organic shapes, game assets, and creative 3D.
@@ -66,6 +57,13 @@ Mesh modeling for organic shapes, game assets, and creative 3D.
 | **Export** | `export_stl` |
 | **Inspection** | `get_mesh_stats`, `get_objects`, `get_screenshot` |
 
+### 3. openscad-mcp (1 tool)
+Code-first approach. Scripting reference: `llms.txt/OPENSCAD_RESOURCES.md`
+
+| Tool | Description |
+|------|-------------|
+| `execute_scad` | Execute OpenSCAD code, export STL |
+
 ## Short-term Goals
 
 > READ `llms.txt/TODO.md`
@@ -73,3 +71,4 @@ Mesh modeling for organic shapes, game assets, and creative 3D.
 ## Codebase Requirements
 
 > READ `llms.txt/RULES.md`
+

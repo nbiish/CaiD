@@ -119,6 +119,54 @@ class FreeCADMCPServer:
     
     # ===== Tool Implementations =====
     
+    def _tool_execute_code(self, args: dict[str, Any]) -> dict:
+        """Execute arbitrary Python code in FreeCAD."""
+        code = args.get("code", "")
+        if not code.strip():
+            return {"output": ""}
+        
+        import io
+        import sys
+        
+        # Capture stdout
+        old_stdout = sys.stdout
+        sys.stdout = buffer = io.StringIO()
+        
+        try:
+            exec(code, {"__builtins__": __builtins__, "App": App, "FreeCAD": App, 
+                        "Gui": Gui, "FreeCADGui": Gui, "Part": Part, "Sketcher": Sketcher})
+            output = buffer.getvalue()
+            return {"output": output if output else "OK"}
+        except Exception as e:
+            return {"output": f"Error: {e}"}
+        finally:
+            sys.stdout = old_stdout
+    
+    def _tool_get_model_info(self, args: dict[str, Any]) -> dict:
+        """Get objects and dimensions from current document."""
+        doc = App.ActiveDocument
+        if not doc:
+            return {"error": "No active document"}
+        
+        obj_name = args.get("object_name", "")
+        info = {"document": doc.Name, "objects": []}
+        
+        for obj in doc.Objects:
+            if obj_name and obj.Name != obj_name:
+                continue
+            obj_info = {"name": obj.Name, "type": obj.TypeId}
+            if hasattr(obj, "Shape"):
+                bb = obj.Shape.BoundBox
+                obj_info["dimensions"] = {
+                    "length": round(bb.XMax - bb.XMin, 3),
+                    "width": round(bb.YMax - bb.YMin, 3),
+                    "height": round(bb.ZMax - bb.ZMin, 3),
+                    "volume": round(obj.Shape.Volume, 3),
+                }
+            info["objects"].append(obj_info)
+        
+        return info
+
     def _tool_create_document(self, args: dict[str, Any]) -> dict:
         """Create a new FreeCAD document."""
         name = args.get("name", "Untitled")

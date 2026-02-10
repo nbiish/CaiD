@@ -758,13 +758,23 @@ class BlenderMCPServer:
         obj.select_set(True)
         bpy.context.view_layer.objects.active = obj
         
-        # Export
-        bpy.ops.export_mesh.stl(
-            filepath=file_path,
-            use_selection=True,
-            ascii=ascii_format,
-            use_mesh_modifiers=apply_modifiers,
-        )
+        # Export - try new Blender 5.0/4.2+ API first, fallback to legacy
+        try:
+            # Blender 5.0+ uses wm.stl_export
+            bpy.ops.wm.stl_export(
+                filepath=file_path,
+                export_selected_objects=True,
+                ascii_format=ascii_format,
+                apply_modifiers=apply_modifiers,
+            )
+        except AttributeError:
+            # Fallback for Blender 4.1 and earlier
+            bpy.ops.export_mesh.stl(
+                filepath=file_path,
+                use_selection=True,
+                ascii=ascii_format,
+                use_mesh_modifiers=apply_modifiers,
+            )
         
         import os
         file_size = os.path.getsize(file_path) if os.path.exists(file_path) else 0

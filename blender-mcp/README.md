@@ -2,26 +2,30 @@
 
 AI-assisted 3D mesh modeling via Model Context Protocol.
 
+> ✅ **Live Tested**: Core tools verified (2026-02-07) | **Focus**: Engineering/Modeling
+
 ## Features
 
 - Create and manipulate 3D meshes in Blender
-- Mesh editing (extrude, bevel, inset, loop cut)
+- **Engineering focus**: Chamfers, bevels, precision modeling
 - Non-destructive modifiers (subdivision, mirror, array)
-- Object transformations
+- STL export for 3D printing (Blender 5.0 compatible)
 - Screenshot capture for visual feedback
 
 ## Installation
 
 ### Blender Addon
 
-1. Open Blender → Edit → Preferences → Add-ons
-2. Click "Install..." and select `addon/BlenderMCP/__init__.py`
-3. Enable "Development: Blender MCP Bridge"
+Copy `addon/BlenderMCP/` to your Blender addons folder:
 
-Or copy `addon/BlenderMCP/` to:
-- **macOS**: `~/Library/Application Support/Blender/4.0/scripts/addons/`
-- **Linux**: `~/.config/blender/4.0/scripts/addons/`
-- **Windows**: `%APPDATA%\Blender Foundation\Blender\4.0\scripts\addons\`
+- **macOS**: `~/Library/Application Support/Blender/5.0/scripts/addons/`
+- **Linux**: `~/.config/blender/5.0/scripts/addons/`
+- **Windows**: `%APPDATA%\Blender Foundation\Blender\5.0\scripts\addons\`
+
+Then in Blender:
+1. **Edit → Preferences → Add-ons**
+2. Search for "MCP" and enable **"Blender MCP Bridge"**
+3. Open **Sidebar (N key) → MCP tab → Start Server**
 
 ### MCP Server
 
@@ -32,8 +36,6 @@ uv run blender-mcp
 ```
 
 ## Claude Desktop Configuration
-
-Add to `claude_desktop_config.json`:
 
 ```json
 {
@@ -46,43 +48,94 @@ Add to `claude_desktop_config.json`:
 }
 ```
 
-## Environment Variables
+## Tools (25 Total)
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `BLENDER_HOST` | localhost | Blender socket host |
-| `BLENDER_PORT` | 9876 | Blender socket port |
+### Primitives & Objects
+| Tool | Description | Status |
+|------|-------------|--------|
+| `create_primitive` | Cube, Sphere, Cylinder, Cone, Torus, Plane | ✅ |
+| `get_objects` | List scene objects with vertex/face counts | ✅ |
+| `delete_object` | Remove object from scene | ✅ |
+| `transform_object` | Move, Rotate, Scale | ✅ |
 
-## Tools
+### Mesh Editing
+| Tool | Description | Status |
+|------|-------------|--------|
+| `extrude_faces` | Extrude selected faces | ✅ |
+| `inset_faces` | Inset selected faces | ✅ |
+| `bevel_edges` | Bevel selected edges (chamfer) | ✅ |
+| `loop_cut` | Add edge loops | ✅ |
+| `knife_cut` | Cut through geometry | ✅ |
 
-| Tool | Description |
-|------|-------------|
-| `create_primitive` | Cube, UV Sphere, Cylinder, Cone, Torus, Plane |
-| `extrude_faces` | Extrude selected faces |
-| `inset_faces` | Inset selected faces |
-| `bevel_edges` | Bevel selected edges |
-| `loop_cut` | Add edge loops |
-| `add_modifier` | Subdivision, Mirror, Array, Boolean |
-| `apply_modifier` | Bake modifier to mesh |
-| `spin` | Revolve geometry around axis (lathe operation) |
-| `screw_modifier` | Add screw modifier for helix/spiral extrusion |
-| `create_spiral` | Create spiral/helix curve |
-| `curve_to_mesh` | Convert curve to mesh with optional bevel |
-| `fillet_edges` | Apply rounded fillet to edges (smooth radius) |
-| `chamfer_edges` | Apply flat chamfer to edges (angled cut) |
-| `fill_holes` | Fill gaps in mesh by creating faces on boundary edges |
-| `bridge_edges` | Bridge two edge loops to create connecting faces |
-| `subdivide_mesh` | Subdivide mesh geometry to increase detail |
-| `merge_vertices` | Merge nearby or selected vertices |
-| `export_stl` | Export object to STL for 3D printing |
-| `get_mesh_stats` | Get mesh validation stats (vertices, manifold status) |
-| `knife_cut` | Cut through mesh geometry with a line |
-| `assign_material` | Create and assign a material to an object |
-| `select_geometry` | Select vertices/edges/faces |
-| `transform_object` | Move, Rotate, Scale |
-| `delete_object` | Remove object from scene |
-| `get_objects` | List scene objects |
-| `get_screenshot` | Capture viewport render |
+### Modifiers
+| Tool | Description | Status |
+|------|-------------|--------|
+| `add_modifier` | Subdivision, Mirror, Array, Boolean | ✅ |
+| `apply_modifier` | Bake modifier to mesh | ✅ |
+
+### Spiral/Helix (Engineering)
+| Tool | Description | Status |
+|------|-------------|--------|
+| `spin` | Revolve geometry (lathe operation) | ✅ |
+| `screw_modifier` | Helix/spiral extrusion | ✅ |
+| `create_spiral` | Spiral/helix curve | ✅ |
+| `curve_to_mesh` | Convert curve to mesh | ✅ |
+
+### Edge Finishing (Engineering)
+| Tool | Description | Status |
+|------|-------------|--------|
+| `fillet_edges` | Rounded fillet on edges | ✅ |
+| `chamfer_edges` | Flat chamfer on edges | ✅ |
+
+### Mesh Repair
+| Tool | Description | Status |
+|------|-------------|--------|
+| `fill_holes` | Fill gaps in mesh | ✅ |
+| `bridge_edges` | Bridge two edge loops | ✅ |
+| `subdivide_mesh` | Increase mesh detail | ✅ |
+| `merge_vertices` | Clean topology | ✅ |
+| `get_mesh_stats` | Mesh validation stats | ✅ |
+
+### Export & Materials
+| Tool | Description | Status |
+|------|-------------|--------|
+| `export_stl` | STL for 3D printing (Blender 5.0+) | ✅ |
+| `assign_material` | Create and assign materials | ✅ |
+| `get_screenshot` | Capture viewport render | ✅ |
+
+## Engineering Example
+
+```python
+# Create M8 bolt shank with chamfered edges
+create_primitive(shape="Cylinder", name="M8_Shank", size=0.4)
+bevel_edges(object_name="M8_Shank", width=0.05, segments=2)
+
+# Create chamfered alignment peg
+create_primitive(shape="Cylinder", name="ChamferPeg", size=0.3, location=[2, 0, 0])
+bevel_edges(object_name="ChamferPeg", width=0.1, segments=1)
+
+# Create mounting bracket
+create_primitive(shape="Cube", name="MountBracket", size=1, location=[-2, 0, 0])
+extrude_faces(object_name="MountBracket", depth=0.5, select_all=True)
+
+# Export for 3D printing
+export_stl(object_name="M8_Shank", file_path="/path/to/m8_shank.stl")
+```
+
+## Architecture
+
+```
+┌─────────────────┐     stdio      ┌──────────────────┐
+│  Claude/Client  │ ◄────────────► │  blender-mcp     │
+│     (MCP)       │                │  (Python server) │
+└─────────────────┘                └────────┬─────────┘
+                                            │ Socket
+                                            │ :9876
+                                   ┌────────▼─────────┐
+                                   │  Blender Addon   │
+                                   │  (MCP Bridge)    │
+                                   └──────────────────┘
+```
 
 ## License
 
