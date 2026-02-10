@@ -31,13 +31,15 @@
 
 ## Components
 
-### 1. freecad-mcp (2 tools)
+### 1. freecad-mcp (4 tools)
 Code-first approach. Scripting reference: `llms.txt/FREECAD_RESOURCES.md`
 
 | Tool | Description |
 |------|-------------|
 | `execute_code` | Execute Python code in FreeCAD |
 | `get_model_info` | Get objects and dimensions |
+| `get_selection` | Get selected faces/edges/objects |
+| `get_screenshot` | Capture 3D viewport image |
 
 ### 2. blender-mcp (25 tools)
 Mesh modeling for organic shapes, game assets, and creative 3D.

@@ -1,31 +1,34 @@
 # FreeCAD MCP Server
 
-Code-first approach. 2 tools, infinite capability.
+Code-first approach. 4 tools, infinite capability.
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `execute_code` | Execute Python code in FreeCAD |
+| `execute_code` | Execute Python in FreeCAD |
 | `get_model_info` | Get objects and dimensions |
+| `get_selection` | Get selected faces/edges/objects |
+| `get_screenshot` | Capture 3D viewport image |
 
 ## Scripting Reference
 
-See [FREECAD_RESOURCES.md](../llms.txt/FREECAD_RESOURCES.md) for:
-- Part module: primitives, booleans, transforms
-- PartDesign: Sketcher, Pad, Pocket, Hole, Fillet
-- BoundBox: dimensions, volume, area
-- Export: STL, STEP
+See [FREECAD_RESOURCES.md](../llms.txt/FREECAD_RESOURCES.md) for patterns:
+- Primitives, booleans, transforms
+- PartDesign: Sketcher, Pad, Pocket, Fillet
+- Selection API (interactive modeling)
+- 3D text, snap-fit clips, tolerances
 
 ## Requirements
 
-1. FreeCAD running with MCP addon enabled
-2. Addon listening on `localhost:9875`
+1. FreeCAD running with MCP addon (auto-starts on launch)
+2. Addon listens on `localhost:9875`
 
 ## Install
 
 ```bash
 cd freecad-mcp && uv sync
+cp -r addon/FreeCADMCP ~/Library/Application\ Support/FreeCAD/Mod/
 ```
 
 ## Claude Desktop
@@ -41,15 +44,10 @@ cd freecad-mcp && uv sync
 }
 ```
 
-## Example
+## Manual Start (if auto-start fails)
 
+In FreeCAD Python console:
 ```python
-execute_code(code="""
-import Part
-base = Part.makeBox(80, 40, 10)
-hole = Part.makeCylinder(5, 15)
-hole.translate(App.Vector(40, 20, -2))
-result = base.cut(hole)
-Part.show(result)
-""")
+from FreeCADMCP import rpc_server
+rpc_server.start_server()
 ```
