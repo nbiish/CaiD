@@ -11,28 +11,29 @@
 ## Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   AI Client     │     │   AI Client     │     │   AI Client     │
-│ (Claude, etc.)  │     │ (Claude, etc.)  │     │ (Claude, etc.)  │
-└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-         │ MCP                   │ MCP                   │ MCP
-         ▼                       ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  freecad-mcp    │     │  blender-mcp    │     │  openscad-mcp   │
-│  (Python/uv)    │     │  (Python/uv)    │     │  (Python/uv)    │
-└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-         │ XML-RPC               │ Socket                │ subprocess
-         ▼                       ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│ FreeCAD Addon   │     │ Blender Addon   │     │ OpenSCAD CLI    │
-│ (GUI Bridge)    │     │ (GUI Bridge)    │     │ (Headless)      │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
+┌─────────────────┐     ┌─────────────────┐
+│   AI Client     │     │   AI Client     │
+│ (Claude, etc.)  │     │ (Claude, etc.)  │
+└────────┬────────┘     └────────┬────────┘
+         │ MCP                   │ MCP
+         ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐
+│  freecad-mcp    │     │  blender-mcp    │
+│  (Python/uv)    │     │  (Python/uv)    │
+└────────┬────────┘     └────────┬────────┘
+         │ XML-RPC               │ Socket
+         ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐
+│ FreeCAD Addon   │     │ Blender Addon   │
+│ (GUI Bridge)    │     │ (GUI Bridge)    │
+└─────────────────┘     └─────────────────┘
 ```
 
 ## Components
 
-### 1. freecad-mcp (4 tools)
+### 1. freecad-mcp (4 tools) - ✅ STABLE / PROVEN (v0.2.0)
 Code-first approach. Scripting reference: `llms.txt/FREECAD_RESOURCES.md`
+**Success Story**: Fully modeled parametric Heltec V4 Case (Base + Lid + Snap-fits + Text) entirely via MCP.
 
 | Tool | Description |
 |------|-------------|
@@ -41,8 +42,12 @@ Code-first approach. Scripting reference: `llms.txt/FREECAD_RESOURCES.md`
 | `get_selection` | Get selected faces/edges/objects |
 | `get_screenshot` | Capture 3D viewport image |
 
-### 2. blender-mcp (25 tools)
-Mesh modeling for organic shapes, game assets, and creative 3D.
+### 2. blender-mcp (25 tools) - ✅ ALPHA (Verified)
+**Focus**: Engineering, Parametric Modeling, and Bevels/Chamfers (Code-First).
+Scripting reference: `llms.txt/BLENDER_RESOURCES.md`
+**Success Story**: Manually injected server via script, verified connection, and parametrically modeled a chamfered bolt with clean topology.
+
+| Category | Tools |
 
 | Category | Tools |
 |----------|-------|
@@ -59,12 +64,6 @@ Mesh modeling for organic shapes, game assets, and creative 3D.
 | **Export** | `export_stl` |
 | **Inspection** | `get_mesh_stats`, `get_objects`, `get_screenshot` |
 
-### 3. openscad-mcp (1 tool)
-Code-first approach. Scripting reference: `llms.txt/OPENSCAD_RESOURCES.md`
-
-| Tool | Description |
-|------|-------------|
-| `execute_scad` | Execute OpenSCAD code, export STL |
 
 ## Short-term Goals
 

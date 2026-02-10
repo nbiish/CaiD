@@ -246,3 +246,91 @@ doc.recompute()
 import FreeCADGui as Gui
 Gui.ActiveDocument.ActiveView.fitAll()
 ```
+
+---
+
+## Advanced Engineering Patterns
+
+### 1. Robust Design (Topological Naming Safe)
+Avoid referencing generated names like "Face13". Use datum planes and explicit references.
+
+```python
+# 1. Create Datum Plane attached to a specific face
+datum = doc.addObject("PartDesign::Plane", "DatumFace")
+datum.Support = [(pad, ["Face1"])]
+datum.MapMode = "FlatFace"
+
+# 2. Sketch on Datum Plane (Stable reference)
+sketch2 = doc.addObject("Sketcher::SketchObject", "SketchOnDatum")
+sketch2.Support = [(datum, "")]
+sketch2.MapMode = "FlatFace"
+```
+
+### 2. Parametric Design (Spreadsheets)
+Drive the model with variables.
+
+```python
+# Create Spreadsheet
+sheet = doc.addObject("Spreadsheet::Sheet", "Params")
+sheet.set("B1", "20")       # Length
+sheet.set("A1", "Length")   # Label
+sheet.setAlias("B1", "len")
+
+# Bind to Property
+pad.Length = "Params.len"
+doc.recompute()
+```
+
+### 3. Assembly (Multi-Body)
+FreeCAD PartDesign bodies are separate entities. Move them to assemble.
+
+```python
+# Move Lid relative to Base
+lid_body = doc.getObject("LidBody")
+lid_body.Placement.Base = App.Vector(0, 0, 15) # Move up 15mm
+
+# Rotate
+import math
+rot = App.Rotation(App.Vector(0,0,1), 180) # 180 deg around Z
+lid_body.Placement.Rotation = rot
+```
+
+### 4. Lofting (Complex Transitions)
+Transition between two different profiles (e.g., Circle to Square).
+
+```python
+# Profile 1 (Bottom)
+s1 = doc.addObject("Sketcher::SketchObject", "Profile1")
+s1.Support = [(doc.XY_Plane, "")]
+s1.addGeometry(Part.Circle(App.Vector(0,0,0), App.Vector(0,0,1), 10))
+
+# Profile 2 (Top, offset 20mm)
+s2 = doc.addObject("Sketcher::SketchObject", "Profile2")
+s2.Support = [(doc.XY_Plane, "")]
+s2.AttachmentOffset.Base = App.Vector(0,0,20)
+s2.addGeometry(Part.LineSegment(App.Vector(-10,-10), App.Vector(10,-10)))
+# ... complete square ...
+
+# Loft
+loft = doc.addObject("PartDesign::AdditiveLoft", "Loft")
+loft.Sections = [s1, s2]
+loft.Solid = True
+```
+
+### 5. TechDraw (2D Drawings)
+Generate engineering drawings from 3D parts.
+
+```python
+# Create Page
+page = doc.addObject("TechDraw::DrawPage", "Page")
+template = doc.addObject("TechDraw::DrawSVGTemplate", "Template")
+template.Template = App.getResourceDir() + "Mod/TechDraw/Templates/A4_Landscape_ISO7200_TD.svg"
+page.Template = template
+
+# Add View
+view = doc.addObject("TechDraw::DrawViewPart", "View")
+view.Source = [body]
+view.Direction = (0, 0, 1) # Top view
+page.addView(view)
+doc.recompute()
+```

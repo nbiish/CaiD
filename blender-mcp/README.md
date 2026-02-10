@@ -12,6 +12,10 @@ AI-assisted 3D mesh modeling via Model Context Protocol.
 - STL export for 3D printing (Blender 5.0 compatible)
 - Screenshot capture for visual feedback
 
+## Engineering Reference
+
+> **📘 Guide**: See pattern library in [`llms.txt/BLENDER_RESOURCES.md`](../llms.txt/BLENDER_RESOURCES.md).
+
 ## Installation
 
 ### 1. MCP Server (Python)

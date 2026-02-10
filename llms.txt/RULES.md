@@ -10,6 +10,8 @@
 
 | Server | Port | Protocol | Focus |
 |--------|------|----------|-------|
+| Server | Port | Protocol | Focus |
+|--------|------|----------|-------|
 | FreeCAD MCP | 9875 | XML-RPC | Parametric CAD, engineering |
 | Blender MCP | 9876 | Socket | Mesh modeling, organic shapes |
 
@@ -119,6 +121,7 @@
 | Organic shapes | ❌ | ✅ Primary |
 | Mesh repair | ❌ | ✅ `fill_holes` |
 | Modifiers | ❌ | ✅ `add_modifier` |
+| Code-driven Design | ⚠️ Python | ⚠️ Python |
 
 ## Code Standards
 

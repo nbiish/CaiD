@@ -46,9 +46,9 @@ cd freecad-mcp && uv sync && uv run freecad-mcp
 ### Blender MCP
 
 ```bash
-# Install addon via Blender Preferences > Add-ons > Install
-# Or copy manually:
-cp -r blender-mcp/addon/BlenderMCP ~/.config/blender/4.0/scripts/addons/
+# Manual Start (Recommended for Alpha)
+# Open Blender, go to Scripting tab, open/run:
+# caiD/blender_debug_start.py
 
 # Run MCP server
 cd blender-mcp && uv sync && uv run blender-mcp
@@ -80,9 +80,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 │   Claude    │────▶│ freecad-mcp  │────▶│    FreeCAD     │
 │   (LLM)     │     │  (MCP/RPC)   │     │  (GUI/Headless)│
 └─────────────┘     └──────────────┘     └────────────────┘
-       │
-       │            ┌──────────────┐     ┌────────────────┐
-       └───────────▶│ blender-mcp  │────▶│    Blender     │
+       └───────────▶┌──────────────┐     ┌────────────────┐
+                    │ blender-mcp  │────▶│    Blender     │
                     │ (MCP/Socket) │     │ (GUI/Background)│
                     └──────────────┘     └────────────────┘
 ```

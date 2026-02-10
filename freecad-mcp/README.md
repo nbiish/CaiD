@@ -2,6 +2,8 @@
 
 Code-first CAD modeling. 4 tools, infinite capability.
 
+> **✅ Success Story**: Modeled [Heltec V4 Case](https://github.com/nbiish/CaiD/result/HeltecV4) parametrically via MCP.
+
 ## Tools
 
 | Tool | Description |
