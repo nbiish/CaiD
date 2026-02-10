@@ -14,35 +14,46 @@ AI-assisted 3D mesh modeling via Model Context Protocol.
 
 ## Installation
 
-### Blender Addon
-
-Copy `addon/BlenderMCP/` to your Blender addons folder:
-
-- **macOS**: `~/Library/Application Support/Blender/5.0/scripts/addons/`
-- **Linux**: `~/.config/blender/5.0/scripts/addons/`
-- **Windows**: `%APPDATA%\Blender Foundation\Blender\5.0\scripts\addons\`
-
-Then in Blender:
-1. **Edit → Preferences → Add-ons**
-2. Search for "MCP" and enable **"Blender MCP Bridge"**
-3. Open **Sidebar (N key) → MCP tab → Start Server**
-
-### MCP Server
+### 1. MCP Server (Python)
 
 ```bash
-cd blender-mcp
-uv sync
-uv run blender-mcp
+cd blender-mcp && uv sync
 ```
 
-## Claude Desktop Configuration
+### 2. Blender Addon
+
+Copy `addon/BlenderMCP/` to your Blender addons folder.
+
+| OS | Path |
+|----|------|
+| macOS | `~/Library/Application Support/Blender/4.2/scripts/addons/` |
+| Linux | `~/.config/blender/4.2/scripts/addons/` |
+| Windows | `%APPDATA%\Blender Foundation\Blender\4.2\scripts\addons\` |
+
+> **Note:** Replace `4.2` with your actual Blender version (e.g. `3.6`, `4.0`, `5.0`).
+
+### 3. Start the MCP Bridge
+
+**Option A: GUI (Easiest)**
+1. Open Blender Preferences → Add-ons → Enable **"Blender MCP Bridge"**
+2. In 3D View, press **N** to open Sidebar
+3. Click **MCP** tab → **Start Server** (or verify it says "Server running")
+
+**Option B: Python Console (Manual)**
+If the button doesn't work, run this in the Scripting tab or Python Console:
+```python
+import bpy
+bpy.ops.mcp.start_server()
+```
+
+## MCP Client Config
 
 ```json
 {
   "mcpServers": {
     "blender": {
       "command": "uv",
-      "args": ["--directory", "/path/to/CaiD/blender-mcp", "run", "blender-mcp"]
+      "args": ["--directory", "/path/to/blender-mcp", "run", "blender-mcp"]
     }
   }
 }
@@ -125,16 +136,7 @@ export_stl(object_name="M8_Shank", file_path="/path/to/m8_shank.stl")
 ## Architecture
 
 ```
-┌─────────────────┐     stdio      ┌──────────────────┐
-│  Claude/Client  │ ◄────────────► │  blender-mcp     │
-│     (MCP)       │                │  (Python server) │
-└─────────────────┘                └────────┬─────────┘
-                                            │ Socket
-                                            │ :9876
-                                   ┌────────▼─────────┐
-                                   │  Blender Addon   │
-                                   │  (MCP Bridge)    │
-                                   └──────────────────┘
+MCP Client ←→ blender_mcp.py (stdio) ←→ Socket :9876 ←→ Blender Addon
 ```
 
 ## License

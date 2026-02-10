@@ -1,6 +1,5 @@
-"""FreeCAD MCP Addon — GUI initialization."""
+"""FreeCAD MCP Addon — Start MCP Bridge.
 
-
-def InitGui():
-    import FreeCAD
-    FreeCAD.Console.PrintMessage("FreeCADMCP: GUI ready\n")
+Macro: Create a FreeCAD macro with this content for one-click start:
+    from FreeCADMCP import rpc_server; rpc_server.start_server()
+"""

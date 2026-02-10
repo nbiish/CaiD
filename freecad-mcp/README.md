@@ -1,6 +1,6 @@
 # FreeCAD MCP Server
 
-Code-first approach. 4 tools, infinite capability.
+Code-first CAD modeling. 4 tools, infinite capability.
 
 ## Tools
 
@@ -13,25 +13,58 @@ Code-first approach. 4 tools, infinite capability.
 
 ## Scripting Reference
 
-See [FREECAD_RESOURCES.md](../llms.txt/FREECAD_RESOURCES.md) for patterns:
-- Primitives, booleans, transforms
-- PartDesign: Sketcher, Pad, Pocket, Fillet
-- Selection API (interactive modeling)
-- 3D text, snap-fit clips, tolerances
-
-## Requirements
-
-1. FreeCAD running with MCP addon (auto-starts on launch)
-2. Addon listens on `localhost:9875`
+See [FREECAD_RESOURCES.md](../llms.txt/FREECAD_RESOURCES.md) for patterns.
 
 ## Install
 
+### 1. MCP Server (Python package)
+
 ```bash
 cd freecad-mcp && uv sync
-cp -r addon/FreeCADMCP ~/Library/Application\ Support/FreeCAD/Mod/
 ```
 
-## Claude Desktop
+### 2. FreeCAD Addon
+
+Copy the addon to FreeCAD's Mod directory:
+
+```bash
+# Find your Mod path — run in FreeCAD's Python console:
+# print(FreeCAD.getUserAppDataDir() + "Mod")
+
+# macOS (standard or external drive install)
+cp -r addon/FreeCADMCP ~/Library/Application\ Support/FreeCAD/Mod/
+
+# Linux
+cp -r addon/FreeCADMCP ~/.local/share/FreeCAD/Mod/
+
+# Windows
+# Copy addon/FreeCADMCP to %APPDATA%/FreeCAD/Mod/
+```
+
+### 3. Start the MCP Bridge
+
+> **Required each FreeCAD session.** Paste this in FreeCAD's Python console:
+
+```python
+from FreeCADMCP import rpc_server; rpc_server.start_server()
+```
+
+You should see: `FreeCAD MCP Server started on localhost:9875`
+
+#### Optional: Create a Startup Macro
+
+To avoid typing the command manually, create a FreeCAD macro:
+
+1. In FreeCAD: **Macro → Macros → Create**
+2. Name it `StartMCP.FCMacro`
+3. Paste this content:
+   ```python
+   from FreeCADMCP import rpc_server
+   rpc_server.start_server()
+   ```
+4. Save and run it each session, or assign it to a toolbar button
+
+## MCP Client Config
 
 ```json
 {
@@ -44,10 +77,8 @@ cp -r addon/FreeCADMCP ~/Library/Application\ Support/FreeCAD/Mod/
 }
 ```
 
-## Manual Start (if auto-start fails)
+## Architecture
 
-In FreeCAD Python console:
-```python
-from FreeCADMCP import rpc_server
-rpc_server.start_server()
+```
+MCP Client ←→ server.py (stdio) ←→ XML-RPC ←→ rpc_server.py (inside FreeCAD)
 ```
