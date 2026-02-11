@@ -39,16 +39,26 @@ CaiD provides AI-powered 3D modeling through two focused MCP servers:
 # Install addon in FreeCAD
 cp -r freecad-mcp/addon/FreeCADMCP ~/Library/Application\ Support/FreeCAD/Mod/
 
-# Run MCP server
+# Run MCP server (Terminal)
 cd freecad-mcp && uv sync && uv run freecad-mcp
+
+# Start RPC Server (Inside FreeCAD)
+# 1. Open FreeCAD
+# 2. View -> Panels -> Python Console
+# 3. Paste and run:
+from FreeCADMCP import rpc_server; rpc_server.start_server()
+
 ```
 
 ### Blender MCP
 
 ```bash
-# Manual Start (Recommended for Alpha)
-# Open Blender, go to Scripting tab, open/run:
-# caiD/blender_debug_start.py
+# Manual Start (Required)
+# 1. Open Blender
+# 2. Go to Scripting tab
+# 3. Open 'blender_debug_start.py' from the caiD repo
+# 4. Run the script (Play button or Alt+P)
+# 5. Check Window -> Toggle System Console to see "Blender MCP Server started"
 
 # Run MCP server
 cd blender-mcp && uv sync && uv run blender-mcp
